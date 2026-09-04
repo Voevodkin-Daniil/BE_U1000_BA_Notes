@@ -1,0 +1,13 @@
++----------------------+------------------------------------+------------------------------------------------------+
+| Component            | Copyright                          | License                                              |
++----------------------+------------------------------------+------------------------------------------------------+
+| BASIS                | Baikal Electronics JSC             | BSD-3-Clause                                         |
+| HAL                  | Baikal Electronics JSC             | BSD-3-Clause                                         |
+| BSP                  | Baikal Electronics JSC             | BSD-3-Clause                                         |
+| examlpes             | Baikal Electronics JSC             | BSD-3-Clause                                         |
+| scripts              | Baikal Electronics JSC             | BSD-3-Clause                                         |
+| FreeRTOS             | Amazon.com, Inc. or its affiliates | MIT                                                  |
+| TinyUSB              | hathach (tinyusb.org)              | MIT                                                  |
+| OpenOCD              | Free Software Foundation, Inc      | GNU General Public License (GPL), version 2 or later |
+| toolchain            | Free Software Foundation, Inc      | GNU General Public License (GPL), version 2 or later |
++----------------------+------------------------------------+------------------------------------------------------+

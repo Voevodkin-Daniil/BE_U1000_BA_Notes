@@ -1,0 +1,362 @@
+#-... -- -.-. ..- .-.-.- ... -.. -.- .-.-.- ..--- ----- ..--- ..... -...- -.--.-
+# 1. Required config options
+
+# SDK_DIR: SDK path
+# Can be specified as an absolute or relative address.
+# $(CURDIR) variable can be used as the current Makefile's path.
+# Exmple:
+# SDK_DIR = /home/user_name/work/mcu-sdk
+SDK_DIR = $(realpath $(CURDIR)/../../..)
+
+#-... -- -.-. ..- .-.-.- ... -.. -.- .-.-.- ..--- ----- ..--- ..... -...- -.--.-
+# 2. Optional config options
+
+# SRC_AUTOSEARCH: source code files auto add mode
+# If this variable is set to 1, all subdirectories of the project root directory
+# will be parsed to find .c, .S and .s files. All the found files will be added
+# to the build file list.
+# Also the project root directory and all its subdirectories, if they
+# contains .h files, will be added to the list of headers search directories.
+# If the variable is equal to 2, only the project root directory and the
+# <SDK_path>/Projects/common directory will be used to find source code files.
+# In other cases only explicitly specified directories (see CSRC_DIR) will be
+# parsed to find source code files.
+# Default value: 1
+# Example:
+# SRC_AUTOSEARCH := 0
+
+# SRC_DIR: source code directories
+# These directories will be used to search source code files (i.e. all .c, .s
+# and .S files).
+# Also these directories will be used to search header files (see INC_DIR) if
+# SRC_AUTOSEARCH variable is set to 2.
+# The project directory itself is added as source files directory by default.
+# Attention: only absolute paths can be used.
+# Example:
+# SRC_DIR += $(realpath $(CURDIR))/module_src_code
+
+# SRC_DIR_EXCLUDE: exclude directories from the source code directories list
+# Default value: none
+# Example:
+# SRC_DIR_EXCLUDE += $(realpath $(CURDIR))/module_to_be_excluded
+
+# CSRC: list of all .c souce code files
+# This variable can be used to add source code files, required to build
+# the firmware.
+# Default value: none
+# Example:
+# CSRC += $(realpath $(CURDIR))/hacktheworld.c
+# CSRC += $(SDK_DIR)/Drivers/HAL/Src/bmcu_cru.c
+
+# CSRC_EXCLUDE: exclude files from the source files list to be built
+# Can be used to exclude an individual .c source code file from the
+# build process.
+# Default value: none
+# Example:
+# CSRC_EXCLUDE += $(realpath $(CURDIR))/broken_source.c
+
+# ASRC: list of all assembler souce code files
+# This variable cna be used to add source code files, required to build
+# the firmware.
+# Default value: none
+# Example:
+# ASRC += $(realpath $(CURDIR))/general_ai.s
+
+# ASRC_EXCLUDE: exclude assembler files from the source files list to be built
+# Can be used to exclude an individual .h header file from the build process.
+# Default value: none
+# Example:
+# ASRC_EXCLUDE += $(realpath $(CURDIR))/broken_source.S
+
+# INC_DIR: header files directories
+# These directories will be used to search for header files during
+# firmware build.
+# Attention: only absolute paths can be used.
+# Example:
+# INC_DIR += $(realpath $(CURDIR))/module_src_code/include
+
+# PRJ_NAME: the project name
+# Specify the project name.
+# It will be used as the name of built firmware (<PRJ_NAME>.bin, <PRJ_NAME>.hex,
+# <PRJ_NAME>.elf etc.).
+# Default value: the name of the project directory
+# Example:
+# PRJ_NAME := hal9000
+
+# LD_SCRIPT: the path to the custom linker script to be used
+# Linker (ld) script defines the memory map of the firmware to be built.
+# By default the linker script will be automatically generated dureing the
+# firmware building process. This script is base on the template:
+# $(SDK_DIR)/Tools/build/ldscript_template.ld
+# Custom linker script will be used if this variable is defined.
+# Default value: none
+# Example:
+# $(realpath $(CURDIR))/super_script.ld
+
+# MEM_REG_ROM: select the memory region as the firmware code storage
+# This variable is meaningfull only if the linker script file path is not
+# specified (see LD_SCRIPT variable) and if there is no any custom .ld file
+# in the project root directory.
+# This variable defines firmware code location in MCU memory map.
+# Only one of the following values ​​can be used: EFLASH QSPI1 TCMA TCMB
+# Note: TCMA and TCMB are not persistent storage types, so they are
+# mainly useful while debugging.
+# Default value: EFLASH
+# Example:
+# MEM_REG_ROM := EFLASH
+# MEM_REG_ROM := QSPI1
+# MEM_REG_ROM := TCMA
+# MEM_REG_ROM := TCMB
+
+# MEM_REG_ROM_OFFSET: set the firmware linking offset of the ROM region
+# This variable is meaningfull only if the linker script file path is not
+# specified (see LD_SCRIPT variable) and if there is no any custom .ld file
+# in the project root directory.
+# Variable allows to change the desirable starting address of the built
+# firmware in the ROM memory region.
+# ROM memory offset can be useful in case of multi-core project: Core0 and
+# Core1 firmware binary images can be written to the same memory region
+# (eFlash for example), but with different ROM base addreses.
+# Also this variable is useful in case of QSPI-based firmware: XiP loader should
+# be located at the beginning of the QSPI memory area, and the main application
+# can be linkded with some non-zero ROM offset value and also written in
+# QSPI flash memory IC. Keep in mind, that XIP loader jump address value should
+# be in accordance with the ROM offset value of the main application. See
+# 'QSPI_XIPLoader' README file for more info.
+# Default value: 0x00
+# Example:
+# MEM_REG_ROM_OFFSET := 0x10000
+
+# MEM_REG_ROM_SIZE: specify ROM region maximum size
+# Variable allows to re-define ROM memory region size to be used while firmware
+# linking. This possibility can be useful for multi-core projects. For instance,
+# CORE_0 firmware can occupy ROM memory addresses from the beginning of the
+# region to the middle of the whole range, while CORE_1 - from the middle to the
+# end.
+# By default (when this variable is not set) firmware may take up all awailable
+# ROM region. See '<SDK_DIR>/Tools/build/platform/<MCU_MODEL>/mem_map.mk' for
+# memory regions full size information.
+# Default value: none
+# Example:
+# MEM_REG_ROM_SIZE := 16K
+# MEM_REG_ROM_SIZE := 8192
+
+# MEM_REG_RAM: select the memory region as the firmware volatile storage
+# This variable is meaningfull only if the linker script file path is not
+# specified (see LD_SCRIPT variable) and if there is no any custo .ld file
+# in the project root directory.
+# This variable defines firmware's volatile data location in MCU memory map.
+# Only one of the following values ​​can be used: TCMA TCMB SRAM
+# Default value: SRAM
+# Example:
+# MEM_REG_RAM := SRAM
+# MEM_REG_RAM := TCMA
+# MEM_REG_RAM := TCMB
+
+# MEM_REG_RAM_OFFSET: set the firmware linking offset of the RAM region
+# This variable is meaningfull only if the linker script file path is not
+# specified (see LD_SCRIPT variable) and if there is no any custom .ld file
+# in the project root directory.
+# Variable allows to change the desirable address offset of the the RAM
+# memory region.
+# Can be useful in case of multi-core project: Core0 and Core1 may share the
+# same RAM memory region (TCMA for example), but with different
+# RAM base addreses.
+# Default value: 0x00
+# Example:
+# MEM_REG_RAM_OFFSET := 0x10000
+
+# MEM_REG_RAM_SIZE: specify RAM region maximum size
+# Variable allows to re-define RAM memory region size to be used while firmware
+# linking. This possibility can be useful for multi-core projects. For instance,
+# CORE_0 firmware can occupy RAM memory addresses from the beginning of the
+# region to the middle of the whole range, while CORE_1 - from the middle to the
+# end.
+# By default (when this variable is not set) firmware may take up all awailable
+# RAM region. See '<SDK_DIR>/Tools/build/platform/<MCU_MODEL>/mem_map.mk' for
+# memory regions full size information.
+# Default value: none
+# Example:
+# MEM_REG_RAM_SIZE := 16K
+# MEM_REG_RAM_SIZE := 8192
+
+# RODATA_IN_RAM: locate .rodata section in the RAM memory region
+# This variable allows to change VMA of the .rodata to the RAM region (like
+# .data section). It allows noticeably increase access speed to the .rodata
+# section because of data and instruction flows separation.
+# By default (when this variable is not set) .rodata region is located
+# in the ROM region.
+# Default value: none
+# Examples:
+# RODATA_IN_RAM := 1
+
+# BUILD_TYPE: firmware build type
+# Should be either "debug" or "release".
+# Some build-time options could depend on this one: optimization level,
+# compiler and linker flags, etc.
+# This value will be used as the name of the build artifacts output directory.
+# Default value: debug
+# Example:
+# BUILD_TYPE := debug
+# BUILD_TYPE := release
+
+# OPT: optimization level control
+# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+# Default value: 0
+# Example:
+# OPT := 0
+# OPT := 2
+# OPT := s
+# OPT := fast
+
+# DEBUG: control the ability to debug the resulting firmware
+# https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html#Debugging-Options
+# https://gcc.gnu.org/onlinedocs/gcc-3.3.5/gcc/Debugging-Options.html
+# Default value: gdb3
+# Example:
+# DEBUG := 0
+# DEBUG := gdb3
+
+# MCU_MODEL: model of the target microcontroller
+# This parameter defines which header file with MCU registers description will
+# be used. Different MCU models have different register maps.
+# Valid values: BMCU_U or BE_U1000
+# Default value: BE_U1000
+# Example:
+# MCU_MODEL := BMCU_U
+# MCU_MODEL := BE_U1000
+
+# FLOAT_POINT_MODE: enable/disable FPU
+# Ther are two modes:
+# Software (SOFT):
+# - Software implementation of the floating point arithmetic.
+# - FPU hardware instructions are not used.
+# - Arguments of float/double type functions are passed through integer
+#   registers or stack.
+# - No ROM math library support
+# Hardware (HARD):
+# - FPU is enabled.
+# - Float/double arguments and return values are passed through 
+#   the FPU registers.
+# Valid values: HARD or SOFT
+# Default value: HARD
+# Example:
+# GCC_FP_MODE := SOFT
+# GCC_FP_MODE := HARD
+
+# CORE_NUM: select the target MCU core
+# This variable defines the architecture and ABI to be used and some
+# othe constraints.
+# Each of MCU cores has its own characteristics (ISA, periphery connection,
+# available memory, work frequency, etc.).
+# CORE_0_1 variant allows to build a valid firmware fot both Core 0 and Core 1.
+# Valid values: CORE_0, CORE_1, CORE_0_1 or CORE_2
+# Default value: CORE_0
+# Example:
+# CORE_NUM := CORE_1
+# CORE_NUM := CORE_2
+
+# BOARD: specify the name of the target development board
+# If the project to be built intended to be run on one of the supported
+# development boards, BOARD variable can be used to specify the board's name
+# If a valid BOARD value was defined in the build script, the corresponding BSP
+# will be used dureing project build process.
+# See '<SDK_DIR>/BSP' directory to get the list of supported boards.
+# Valid values: EVU_BA_1_2, EVU_BA_2_0, EVU_BA_2_1, EVU_BA_2_3,
+# EVU_BA_2_5, EVU_LI_2_0 and EVU_LI_2_1
+# Defalut value: not set
+# Example:
+# BOARD := EVU_BA_1_2
+# BOARD := EVU_BA_2_0
+# BOARD := EVU_BA_2_1
+# BOARD := EVU_BA_2_3
+# BOARD := EVU_BA_2_5
+# BOARD := EVU_LI_2_0
+# BOARD := EVU_LI_2_1
+
+# LDLIBS: specify additional libraries required to build the firmware
+# Default vlue: -lc -lm -lgcc
+# Example:
+# LDLIBS += -lquickmath
+
+# PRINTF_FLOAT: specify the ability to use floating point format in the
+# ptintf()-like output functions.
+# The firmware size may increase if this variable is enabled
+# Valid values: 0 (disabled) or !0 (enabled)
+# Default value: 0
+# Example:
+# PRINTF_FLOAT := 0
+# PRINTF_FLOAT := UVELICHIT_RAZMER_PROSHIVKI
+
+# SCANF_FLOAT: specify the ability to use floating point format in the
+# scanf()-like input functions.
+# The firmware size may increase if this variable is enabled
+# Valid values: 0 (disabled) or !0 (enabled)
+# Default value: 0
+# Example:
+# SCANF_FLOAT := 0
+# SCANF_FLOAT := MAKE_FIRMWARE_GREAT_AGAIN
+
+# CFLAGS: specify C compiler flags
+# https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
+# Default values can be found in common.mk file:
+# <SDK_path>/Tools/build/common.mk
+# Example:
+# DFLAGS += -Wall
+
+# LDFLAGS: specify linker flags
+# https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+# Default values can be found in common.mk file:
+# <SDK_path>/Tools/build/common.mk
+# Example:
+# LDFLAGS += --strip-all
+
+# CDEFS: add C definitions
+# These definitions can be used in the project source code
+# Default value is defined by the common.mk file (CORE_xxx, NDEBUG, BMCU, etc.)
+# Example:
+# CDEFS += -DVERSION=666
+# CDEFS += -D'HOST_CPU_NUM=$$(nproc)'
+
+# V: set targets execution verbosity level
+# 0 - compact output without any commands execution details
+# 1 - show the raw command line for the each target execution step
+# Default value: 0
+# Example:
+# V=1
+
+# MAKEFILE_DEBUG: enable debug output during "make" execution
+# Print out internal makefile variables and more "make" utility debug info
+# MAKEFILE_DEBUG = 0: do not show debug output
+# MAKEFILE_DEBUG = 1: show only predefined list of variables
+# MAKEFILE_DEBUG = 2: show all user defined variables
+# MAKEFILE_DEBUG = 3: show all variables
+# Example:
+# MAKEFILE_DEBUG := 1
+
+# PROC_NUM: define the number of processes for parallel building of mkae recipes
+# Default value: number of available CPUs.
+# Example:
+# PROC_NUM := 2
+
+# TC_DIR: toolchain location path
+# It is possible to use another RISC-V toolchain.
+# Default value: $(SDK_DIR)/Tools/toolchain
+# Example:
+# TC_DIR := ~/wrk/riscv_super_puper_toolchain
+
+# MATH_VER: select math function call mode
+# There is an in-ROM implementation of math functions library for
+# some MCU cores (depends on the MCU model too).
+# It is possible explicitly specify the type of math library: either in-ROM or
+# toolchain based (standard) implementation.
+# Default value: depends on the selected $(MCU_MODEL) and $(CORE_NUM)
+# Example
+# MATH_VER := IN_ROM
+# MATH_VER := STANDARD
+
+#-... -- -.-. ..- .-.-.- ... -.. -.- .-.-.- ..--- ----- ..--- ..... -...- -.--.-
+# 3. Please do not edit the code below
+
+# Include the main makefile
+include $(SDK_DIR)/Tools/build/common.mk

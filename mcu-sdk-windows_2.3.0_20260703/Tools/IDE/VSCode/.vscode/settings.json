@@ -1,0 +1,50 @@
+{
+    //OPTIONAL:
+    //Select debugger, available:
+    //  "core2-jtag"   - Use BE-U1000 Core2 as JTAG debugger
+    //  "evu-ba_ftdi"  - EVU-BA built-in FT2232HL
+    //  "ft2232h-jtag" - FT2232H Based Board
+    //  "jlink-jtag"   - SEGGER J-Link
+    //  "olimex-jtag"  - Olimex ARM-USB-OCD-H
+    "OOCD.CONFIG.DEBUGGER": "evu-ba_ftdi",
+
+    //DO NOT EDIT BELOW!!!
+    "POSIX_PATH": "",
+    "SDK_DIR": "",
+    "PRJ_NAME": "",
+    "MCU_MODEL": "",
+    "CORE_NUM": "",
+    "BOARD": "",
+    "MEM_REG_ROM": "",
+    "BUILD_TYPE": "",
+
+    "OOCD.CONFIG.GDB_PORT.CORE_0": "3336",
+    "OOCD.CONFIG.GDB_PORT.CORE_1": "3337",
+    "OOCD.CONFIG.GDB_PORT.CORE_2": "3338",
+    
+    "OOCD.CMD": "${config:SDK_DIR}/Tools/OpenOCD/bin/openocd -f interface/baikal/${config:OOCD.CONFIG.DEBUGGER}.cfg -f board/baikal/${config:BOARD}.cfg",
+
+    "OOCD.LAUNCH.COMMON": "-c \\\"after 100\\\" -c \\\"set ::VSCODE_CONNECTION 1\\\" -c \\\"echo \\\\\\\"On standby...\\\\\\\"\\\"",
+    "OOCD.LAUNCH.TCMA": "${config:OOCD.LAUNCH.COMMON}",
+    "OOCD.LAUNCH.TCMB": "${config:OOCD.LAUNCH.COMMON}",
+    "OOCD.LAUNCH.EFLASH": "${config:OOCD.LAUNCH.COMMON}",
+    "OOCD.LAUNCH.QSPI0": "-c \\\"after 100\\\" -c \\\"QSPI_clk_init\\\" -c \\\"QSPI0 init\\\" -c \\\"QSPI0 XIP on\\\" -c \\\"after 100\\\" -c \\\"set ::VSCODE_CONNECTION 1\\\" -c \\\"echo \\\\\\\"On standby...\\\\\\\"\\\"",
+    "OOCD.LAUNCH.QSPI1": "-c \\\"after 100\\\" -c \\\"QSPI_clk_init\\\" -c \\\"QSPI1 init\\\" -c \\\"QSPI1 XIP on\\\" -c \\\"after 100\\\" -c \\\"set ::VSCODE_CONNECTION 1\\\" -c \\\"echo \\\\\\\"On standby...\\\\\\\"\\\"",
+
+    "OOCD.ERASE.TCMA": "",
+    "OOCD.ERASE.TCMB": "",
+    "OOCD.ERASE.EFLASH": "-c \\\"after 100\\\" -c \\\"eFlash erase\\\" -c \\\"after 100\\\" -c \\\"reset\\\"",
+    "OOCD.ERASE.QSPI0": "-c \\\"after 100\\\" -c \\\"QSPI_clk_init\\\" -c \\\"QSPI0 init\\\" -c \\\"QSPI0 erase\\\" -c \\\"after 100\\\"",
+    "OOCD.ERASE.QSPI1": "-c \\\"after 100\\\" -c \\\"QSPI_clk_init\\\" -c \\\"QSPI1 init\\\" -c \\\"QSPI1 erase\\\" -c \\\"after 100\\\"",
+
+    "OOCD.LOAD.TCMA": "-c \\\"after 100\\\" -c \\\"load_image ${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.bin 0x40010000\\\" -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+    "OOCD.LOAD.TCMB": "-c \\\"after 100\\\" -c \\\"load_image ${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.bin 0x40020000\\\" -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+    "OOCD.LOAD.EFLASH": "-c \\\"after 100\\\" -c \\\"load_image ${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.bin 0xa0000000\\\" -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+    "OOCD.LOAD.QSPI0": "-c \\\"after 100\\\" -c \\\"flash write_bank 0 ${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.bin 0\\\" -c \\\"after 100\\\" -c \\\"reset\\\" -c \\\"exit 0\\\"",
+    "OOCD.LOAD.QSPI1": "-c \\\"after 100\\\" -c \\\"flash write_bank 1 ${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.bin 0\\\" -c \\\"after 100\\\" -c \\\"reset\\\" -c \\\"exit 0\\\"",
+
+    "files.exclude": {
+        "**/output": true,
+        "**/.git": true
+    },
+}

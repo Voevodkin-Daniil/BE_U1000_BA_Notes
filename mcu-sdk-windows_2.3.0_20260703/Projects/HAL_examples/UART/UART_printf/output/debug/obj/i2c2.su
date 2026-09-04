@@ -1,0 +1,5 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/BASIS/Core/Include/basis_core_riscv.h:384:6:__delay_ms	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/tusb320/i2c2.c:34:1:bsp_i2c2_init	64	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/tusb320/i2c2.c:82:10:bsp_i2c2_write	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/tusb320/i2c2.c:108:1:bsp_i2c2_read	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/tusb320/i2c2.c:145:1:bsp_i2c2_flush	16	static

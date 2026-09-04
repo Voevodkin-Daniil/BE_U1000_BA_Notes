@@ -1,0 +1,4 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/serial/serial.c:47:1:bsp_serial_init	64	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/serial/serial.c:73:1:bsp_serial_deinit	16	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/serial/serial.c:82:1:bsp_serial_putchar	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/serial/serial.c:91:1:bsp_serial_getchar	0	static

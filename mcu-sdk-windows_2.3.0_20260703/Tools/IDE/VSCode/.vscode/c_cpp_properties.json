@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "${config:PRJ_NAME}",
+            "includePath": [
+                "${config:SDK_DIR}/**",
+                "${workspaceFolder}/**"
+            ],
+            "intelliSenseMode": "${default}",
+            "compilerPath": "",
+            "cStandard": "${default}",
+            "cppStandard": "${default}"
+        }
+    ],
+    "version": 4
+}

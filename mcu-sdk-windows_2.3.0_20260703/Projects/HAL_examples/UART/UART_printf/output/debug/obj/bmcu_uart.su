@@ -1,0 +1,4 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Inc/bmcu_uart.h:257:20:UART_SetBaudRate	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_uart.c:59:13:UART_DeInit	16	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_uart.c:86:13:UART_Init	48	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_uart.c:196:6:UART_StructInit	0	static

@@ -1,0 +1,221 @@
+MAKEFLAGS += --no-builtin-rules
+
+SDK_ROOT = $(realpath $(CURDIR)/../../../../../..)
+
+#BUILD_CONFIG = debug
+BUILD_CONFIG = release
+
+TARGET = C0
+
+FULL_IMAGE_NAME = main
+
+# Toolchain
+TC_PREFIX = $(SDK_ROOT)/Tools/toolchain/riscv32-none-elf/bin/riscv32-none-elf
+
+# Toolchain
+AR = $(TC_PREFIX)-ar
+ASM = $(TC_PREFIX)-gcc
+CC = $(TC_PREFIX)-gcc
+LD = $(TC_PREFIX)-ld
+NM = $(TC_PREFIX)-nm
+OBJCOPY = $(TC_PREFIX)-objcopy
+OBJDUMP = $(TC_PREFIX)-objdump
+SIZE = $(TC_PREFIX)-size
+STRIP = $(TC_PREFIX)-strip
+
+# Path
+SOURCE_DIR = $(CURDIR)/source
+OUTPUT_DIR = $(CURDIR)/output
+OUTPUT_OBJ_DIR = $(OUTPUT_DIR)/obj
+OUTPUT_BIN_DIR = $(OUTPUT_DIR)/bin
+
+# C source files
+CSRC += $(SOURCE_DIR)/main.c
+CSRC += $(SOURCE_DIR)/syscalls.c
+CSRC += $(SDK_ROOT)/Drivers/HAL/Src/bmcu_cru.c
+CSRC += $(SDK_ROOT)/Drivers/HAL/Src/bmcu_uart.c
+
+ASMSRC +=  $(SOURCE_DIR)/startup.S
+
+vpath %.c $(SOURCE_DIR) \
+$(SDK_ROOT)/Drivers/HAL/Src
+
+vpath %.S $(SOURCE_DIR)
+
+# Include directories
+INC = -I.
+INC += -I$(SOURCE_DIR)
+INC += -I$(SDK_ROOT)/Drivers/BASIS/Core/Include
+INC += -I$(SDK_ROOT)/Drivers/BASIS/Device/BMCU/Include
+INC += -I$(SDK_ROOT)/Drivers/HAL/Inc
+INC += -I$(CURDIR)/../Common/source/include
+
+# C object files
+# COBJ = $(CSRC:%.c=$(OUTPUT_OBJ_DIR)/%.o)
+COBJ = $(addprefix $(OUTPUT_OBJ_DIR)/,$(patsubst %c,%o,$(notdir $(CSRC))))
+# Assembler object files
+ASMOBJ = $(addprefix $(OUTPUT_OBJ_DIR)/,$(patsubst %S,%o,$(notdir $(ASMSRC))))
+
+OBJS += $(ASMOBJ)
+OBJS += $(COBJ)
+
+# ISA
+RISCV_ARCH = rv32imafc_zicsr_zifencei_zmmul_zba_zbb_zbc_zbkb_zbkc_zbkx_zbs_zkne_zknh_zksh_zkt
+
+# ABI
+RISCV_ABI = ilp32f
+
+# Code model
+RISCV_CMODEL = medany
+
+# ISA
+CFLAGS_CONFIG += -march=$(RISCV_ARCH)
+ASMFLAGS_CONFIG += -march=$(RISCV_ARCH)
+
+# ABI
+CFLAGS_CONFIG += -mabi=$(RISCV_ABI)
+ASMFLAGS_CONFIG += -mabi=$(RISCV_ABI)
+
+# Code model
+CFLAGS_CONFIG += -mcmodel=$(RISCV_CMODEL)
+ASMFLAGS_CONFIG += -mcmodel=$(RISCV_CMODEL)
+
+OPT = s
+DEBUG = 0
+
+# C definitions
+CDEFS =
+CDEFS += -DCORE_BR350S1
+CDEFS += -DBMCU_U
+CDEFS += -D_MATH_H_
+
+ifeq ($(BUILD_CONFIG), release)
+	CDEFS += -DNDEBUG
+endif
+
+# Assembler definitions
+ADEFS = 
+
+# Libraries support option
+SPECS = BMCU_core0.specs
+
+# C compiler options
+CFLAGS = 
+CFLAGS += -std=c1x
+CFLAGS += -O$(OPT)
+CFLAGS += -g$(DEBUG)
+CFLAGS += -Wall
+CFLAGS += -Werror-implicit-function-declaration
+CFLAGS += -fmessage-length=0
+CFLAGS += -fno-common
+CFLAGS += -ffunction-sections
+CFLAGS += -fdata-sections
+CFLAGS += -specs=$(SPECS)
+CFLAGS += $(CDEFS)
+CFLAGS += $(CFLAGS_CONFIG)
+# Compiler flags to generate dependency files
+CFLAGS += -MD -MP -MF $(dir $@)$(@F).d
+
+# Assembler options
+ASMFLAGS = 
+ASMFLAGS += -O$(OPT)
+ASMFLAGS += -g$(DEBUG)
+ASMFLAGS += -x assembler-with-cpp
+ASMFLAGS += -specs=$(SPECS)
+ASMFLAGS += $(ADEFS)
+ASMFLAGS += $(ASMFLAGS_CONFIG)
+
+# Linker script
+LDSCRIPT = $(SOURCE_DIR)/linker.ld
+
+# Linker options
+LDFLAGS += -nostdlib
+LDFLAGS += -Wl,-Map=$(OUTPUT_BIN_DIR)/$(TARGET).map,--cref
+LDFLAGS += -Wl,--gc-sections
+LDFLAGS += -specs=$(SPECS)
+LDFLAGS += -T$(LDSCRIPT)
+LDFLAGS += -Wl,-print-memory-usage
+
+# External libraries
+LIBS += -lc
+LIBS += -lgcc
+LIBS += -lm
+LIBS += $(CURDIR)/../Common/lib/dsp_lib.a
+
+.DEFAULT_GOAL: all
+.ONESHELL:
+.PHONY : all clean dependents mkdirs build size elf bin hex lss sym
+
+# Targets
+all: mkdirs build size dependents cat
+
+mkdirs:
+	@ mkdir -p $(OUTPUT_OBJ_DIR) $(OUTPUT_BIN_DIR)
+	
+build: elf bin hex lss sym
+	
+elf: $(OUTPUT_BIN_DIR)/$(TARGET).elf	
+bin: $(OUTPUT_BIN_DIR)/$(TARGET).bin
+hex: $(OUTPUT_BIN_DIR)/$(TARGET).hex
+lss: $(OUTPUT_BIN_DIR)/$(TARGET).lss
+sym: $(OUTPUT_BIN_DIR)/$(TARGET).sym
+	
+size:
+	@$(SIZE) --format=berkeley --radix=10 $(OUTPUT_BIN_DIR)/$(TARGET).elf
+	
+# Linking: create ELF output file from object files
+$(OUTPUT_BIN_DIR)/$(TARGET).elf: $(OBJS)
+	@echo "[LNK] $(notdir $@)"
+	@$(CC) $(LDFLAGS) $(INC) -o $@ $(OBJS) $(LIBS) -lgcc
+
+# Create BIN output file from ELF output file
+%.bin: %.elf
+	@echo "[BIN] $(notdir $@)"
+	@$(OBJCOPY) -O binary $< $@
+
+# Create HEX output file from ELF output file
+%.hex: %.elf
+	@echo "[HEX] $(notdir $@)"
+	@$(OBJCOPY) -O ihex $< $@
+
+# Create extended listing from ELF output file
+%.lss: %.elf
+	@$(OBJDUMP) -h -t -S -C $< > $@
+
+# Create a symbol table from ELF output file
+%.sym: %.elf
+	@$(NM) -n $< > $@
+
+$(OUTPUT_OBJ_DIR)/%.o: %.c
+	@echo "[GCC] $(notdir $<)"
+	@ mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
+	
+$(OUTPUT_OBJ_DIR)/%.o: %.S
+	@echo "[GCC] $(notdir $<)"
+	@mkdir -p $(dir $@)
+	@$(CC) $(ASMFLAGS) $(INC) -c $< -o $@
+	
+clean:
+	rm -rf $(OUTPUT_OBJ_DIR)
+	rm -rf $(OUTPUT_BIN_DIR)
+	cd ../C1 && $(MAKE) clean
+	rm -rf ../Common/output
+
+dependents:
+	cd ../C1 && $(MAKE) clean all
+
+cat:
+    # Clean old image
+	rm -rf ../Common/output
+    # Create output directory
+	mkdir -p ../Common/output
+    # Pad C0 binary with 0xFF
+	$(OBJCOPY) --gap-fill 0xFF --pad-to 0x20000 --input-target binary --output-target binary ./output/bin/C0.bin ../Common/output/tmp0.bin
+    # Append C1 binary
+	cat ../Common/output/tmp0.bin ../C1/output/bin/C1.bin > ../Common/output/$(FULL_IMAGE_NAME).bin
+    # Remove temporary files
+	rm -f ../Common/output/tmp0.bin
+
+# Include the dependency files
+-include $(COBJ:%.o=%.d)

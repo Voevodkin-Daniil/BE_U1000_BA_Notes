@@ -1,0 +1,5 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/led/led.c:43:1:bsp_led_init	48	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/led/led.c:72:1:bsd_led_deinit	48	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/led/led.c:90:1:bsp_led_on	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/led/led.c:96:1:bsp_led_off	0	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/led/led.c:102:1:bsp_led_toggle	0	static

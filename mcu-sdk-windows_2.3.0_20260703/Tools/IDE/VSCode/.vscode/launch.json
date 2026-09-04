@@ -1,0 +1,189 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (CORE_0)",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "__service.OpenOCD.Run",
+            "program": "${config:POSIX_PATH}/output/${config:BUILD_TYPE}/${config:PRJ_NAME}.elf",
+            "svdPath": "${config:SDK_DIR}/Tools/svd/be_u1000.svd",
+            "MIMode": "gdb",
+            "cwd": "${workspaceFolder}",
+            "pipeTransport": {
+                "pipeProgram": "sh",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "${config:SDK_DIR}/Tools/toolchain/riscv32-none-elf/bin/riscv32-none-elf-gdb",
+            },
+            "setupCommands": [
+                {
+                    "description": "Connect to OpenOCD GDB server",
+                    "text": "target remote localhost:${config:OOCD.CONFIG.GDB_PORT.CORE_0}",
+                },
+                {
+                    "description": "Set confirm off",
+                    "text": "set confirm off",
+                },
+                {
+                    "description": "Set ararchitecture rv32",
+                    "text": "set architecture riscv:rv32",
+                },
+                {
+                    "description": "Load CPU Reg map",
+                    "text": "set tdesc filename ${config:POSIX_PATH}/.vscode/core-rv32.xml",
+                },
+                {
+                    "description": "Set Hardware preakpoints limit",
+                    "text": "set remote hardware-breakpoint-limit 3",
+                },
+                {
+                    "description": "Set mem inaccessible by default on",
+                    "text": "set mem inaccessible-by-default on",
+                },
+                {
+                    "description": "Setup QSPI0 Flash memory region",
+                    "text": "mem 0x80000000 0x81000000 ro nocache",
+                },
+                {
+                    "description": "Setup QSPI1 Flash memory region",
+                    "text": "mem 0x90000000 0x91000000 ro nocache",
+                },
+                {
+                    "description": "Setup eFlash memory region",
+                    "text": "mem 0xa0000000 0xa0040000 ro nocache",
+                },
+            ],
+            "postRemoteConnectCommands":[
+                {
+                    "description": "Jump to target memory region",
+                    "text": "monitor jump ${config:MEM_REG_ROM}",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Run",
+                    "text": "continue",
+                    "ignoreFailures": true
+                },
+            ],
+        },
+        {
+            "name": "Connect CORE_1",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}${pathSeparator}output${pathSeparator}${config:BUILD_TYPE}${pathSeparator}${workspaceFolderBasename}.elf",
+            "MIMode": "gdb",
+            "cwd": "${workspaceFolder}",
+            "pipeTransport": {
+                "pipeProgram": "sh",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "${config:SDK_DIR}/Tools/toolchain/riscv32-none-elf/bin/riscv32-none-elf-gdb",
+            },
+            "setupCommands": [
+                {
+                    "description": "Connect to OpenOCD GDB server",
+                    "text": "target remote localhost:${config:OOCD.CONFIG.GDB_PORT.CORE_1}",
+                },
+                {
+                    "description": "Set confirm off",
+                    "text": "set confirm off",
+                },
+                {
+                    "description": "Set ararchitecture rv32",
+                    "text": "set architecture riscv:rv32",
+                },
+                {
+                    "description": "Load CPU Reg map",
+                    "text": "set tdesc filename ${config:POSIX_PATH}/.vscode/core-rv32.xml",
+                },
+                {
+                    "description": "Set Hardware preakpoints limit",
+                    "text": "set remote hardware-breakpoint-limit 3",
+                },
+                {
+                    "description": "Set mem inaccessible by default on",
+                    "text": "set mem inaccessible-by-default on",
+                },
+                {
+                    "description": "Setup QSPI0 Flash memory region",
+                    "text": "mem 0x80000000 0x81000000 ro nocache",
+                },
+                {
+                    "description": "Setup QSPI1 Flash memory region",
+                    "text": "mem 0x90000000 0x91000000 ro nocache",
+                },
+                {
+                    "description": "Setup eFlash memory region",
+                    "text": "mem 0xa0000000 0xa0040000 ro nocache",
+                },
+            ],
+        },
+        {
+            "name": "Connect CORE_2",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}${pathSeparator}output${pathSeparator}${config:BUILD_TYPE}${pathSeparator}${workspaceFolderBasename}.elf",
+            "MIMode": "gdb",
+            "cwd": "${workspaceFolder}",
+            "pipeTransport": {
+                "pipeProgram": "sh",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "${config:SDK_DIR}/Tools/toolchain/riscv32-none-elf/bin/riscv32-none-elf-gdb",
+            },
+            "setupCommands": [
+                {
+                    "description": "Connect to OpenOCD GDB server",
+                    "text": "target remote localhost:${config:OOCD.CONFIG.GDB_PORT.CORE_2}",
+                },
+                {
+                    "description": "Set confirm off",
+                    "text": "set confirm off",
+                },
+                {
+                    "description": "Set ararchitecture rv32",
+                    "text": "set architecture riscv:rv32",
+                },
+                {
+                    "description": "Load CPU Reg map",
+                    "text": "set tdesc filename ${config:POSIX_PATH}/.vscode/core-rv32.xml",
+                },
+                {
+                    "description": "Set Hardware preakpoints limit",
+                    "text": "set remote hardware-breakpoint-limit 3",
+                },
+                {
+                    "description": "Set mem inaccessible by default on",
+                    "text": "set mem inaccessible-by-default on",
+                },
+                {
+                    "description": "Setup QSPI0 Flash memory region",
+                    "text": "mem 0x80000000 0x81000000 ro nocache",
+                },
+                {
+                    "description": "Setup QSPI1 Flash memory region",
+                    "text": "mem 0x90000000 0x91000000 ro nocache",
+                },
+                {
+                    "description": "Setup eFlash memory region",
+                    "text": "mem 0xa0000000 0xa0040000 ro nocache",
+                },
+            ],
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Multi-CPU: All Cores",
+            "configurations": [
+                "Connect CORE_2",
+                "Connect CORE_1",
+                "Debug (CORE_0)"
+            ],
+        },
+        {
+            "name": "Multi-CPU: CORE_0 & CORE_1",
+            "configurations": [
+                "Connect CORE_1",
+                "Debug (CORE_0)"
+            ]
+        }
+    ]
+}

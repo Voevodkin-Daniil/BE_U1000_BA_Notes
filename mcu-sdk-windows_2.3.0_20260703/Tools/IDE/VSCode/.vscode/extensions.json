@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "ms-vscode.makefile-tools",
+    "ms-vscode.cpptools",
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.cpptools-extension-pack",
+  ]
+}

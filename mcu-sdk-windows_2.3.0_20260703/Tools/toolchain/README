@@ -1,0 +1,21 @@
+toolchain
+├── riscv32-picolibc-elf          : RISC-V GCC toolchain for Windows
+└── xpack-windows-build-tools     : utilities needed for firmware building
+
+Run the "xpack-windows-build-tools/add_to_path.bat" script before firmware build to
+add the required directory to the %PATH% environment variable, or manualy add
+"xpack-windows-build-tools/bin" directory to the %PATH".
+
+RISC-V toolchain, gcc 15.2.0 (p-ext), gdb 16.3.0
+
+Tips:
+Toolchain includes specs files for be_u1000/bmcu_u controllers.
+Use with specs param <mcu_model>_core<core_num>.specs, where:
+    <mcu_model> - model of your MCU: "be_u1000" or "bmcu_u"
+    <core_num> - target core: "0" or "1" or "2"
+Examples:
+```sh
+gcc ... -march=rv32imafcn_zicsr_zifencei_zba_zbb_zbc_zbs -mabi=ilp32f -specs=be_u1000_core0.specs ...
+gcc ... -march=rv32imafcpn_zicsr_zifencei_zmmul_zba_zbb_zbc_zbkb_zbkc_zbkx_zbpbo_zbs_zknd_zkne_zknh_zksed_zksh_zpn_zpsfoperand -mabi=ilp32 -specs=bmcu_u_core1.specs ...
+gcc ... -march=rv32ic_zicsr_zifencei_zba_zbb_zbc_zbs -mabi=ilp32 -specs=be_u1000_core2.specs ...
+```

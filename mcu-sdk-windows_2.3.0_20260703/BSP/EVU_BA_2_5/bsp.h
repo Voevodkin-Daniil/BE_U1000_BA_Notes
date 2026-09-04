@@ -1,0 +1,117 @@
+/**
+ * *****************************************************************************
+ *  @file       BSP/EVU_BA_2_5/bsp.h
+ *  @author     Baikal electronics SDK team
+ *  @brief      EVU_BA_2_5 BSP header file
+ *  @version    2.3.0
+ *  @date       20260703
+ *  @details
+ *  Board Support Package is intended to support the EVU-BA-2.5 board and assist
+ *  in developing new software projects based on it.
+ *  It contains board-specific definitions, constants and functions.
+ * 
+ *  File content:
+ *      - EVU-BA-2.5 board related constants and definitions
+ * *****************************************************************************
+ *  @copyright Copyright (c) 2025 Baikal Electronics JSC
+ *
+ *  This software is licensed under terms that can be found in the LICENSE file
+ *  in the root directory of this software component.
+ *  If no LICENSE file comes with this software, it is provided AS-IS.
+ * *****************************************************************************
+ */
+
+#ifndef __BSP_H
+#define __BSP_H
+
+#include "bmcu_cru.h"
+#include "bmcu_gpio.h"
+
+/******************************************************************************/
+/*                                User button                                 */
+/******************************************************************************/
+#define BSP_BTN_GPIO_PORT           (GPIO2)
+#define BSP_BTN_GPIO_PIN            (GPIO_PIN_13)
+#define BSP_BTN_CRU_PORT            (CRU_PORT_C)
+#define BSP_BTN_CRU_PIN             (CRU_PIN_13)
+
+#include "../Components/button/button.h"
+
+/******************************************************************************/
+/*                                    LED                                     */
+/******************************************************************************/
+#define BSP_LED_GPIO_PORT           (GPIO2)
+#define BSP_LED_GPIO_PIN            (GPIO_PIN_0)
+#define BSP_LED_CRU_PORT            (CRU_PORT_C)
+#define BSP_LED_CRU_PIN             (CRU_PIN_0)
+
+#include "../Components/led/led.h"
+
+/******************************************************************************/
+/*                                   Serial                                   */
+/******************************************************************************/
+#define BSP_SERIAL_INSTANCE         (UART0)
+#define BSP_SERIAL_CRU_PIN_AF       (CRU_PIN_AF_1)
+#define BSP_SERIAL_TX_CRU_PORT      (CRU_PORT_A)
+#define BSP_SERIAL_TX_CRU_PIN       (CRU_PIN_6)
+#define BSP_SERIAL_RX_CRU_PORT      (CRU_PORT_A)
+#define BSP_SERIAL_RX_CRU_PIN       (CRU_PIN_7)
+#define BSP_SERIAL_CLIC_IRQN        (CLIC_UART0_IRQn)
+#define BSP_SERIAL_ISR              (UART0_IRQHandler)
+
+#include "../Components/serial/serial.h"
+
+/******************************************************************************/
+/*                                    UART                                    */
+/******************************************************************************/
+#define BSP_UART_INSTANCE           (UART0)
+#define BSP_UART_CRU_PIN_AF         (CRU_PIN_AF_1)
+#define BSP_UART_TX_CRU_PORT        (CRU_PORT_A)
+#define BSP_UART_TX_CRU_PIN         (CRU_PIN_6)
+#define BSP_UART_RX_CRU_PORT        (CRU_PORT_A)
+#define BSP_UART_RX_CRU_PIN         (CRU_PIN_7)
+#define BSP_UART_CLIC_IRQN          (CLIC_UART0_IRQn)
+#define BSP_UART_ISR                (UART0_IRQHandler)
+
+/******************************************************************************/
+/*                                    USB                                     */
+/******************************************************************************/
+#define BSP_USB_DRVVBUS_GPIO_PORT   (GPIO2)
+#define BSP_USB_DRVVBUS_GPIO_PIN    (GPIO_PIN_15)
+#define BSP_USB_DRVVBUS_CRU_PIN_AF  (CRU_PIN_AF_5)
+#define BSP_USB_DRVVBUS_CRU_PORT    (CRU_PORT_C)
+#define BSP_USB_DRVVBUS_CRU_PIN     (CRU_PIN_15)
+#define BSP_USB_VBUS_FLG_GPIO_PORT  (GPIO1)
+#define BSP_USB_VBUS_FLG_GPIO_PIN   (GPIO_PIN_14)
+#define BSP_USB_VBUS_FLG_CRU_PORT   (CRU_PORT_B)
+#define BSP_USB_VBUS_FLG_CRU_PIN    (CRU_PIN_14)
+#define BSP_USB_CLIC_IRQN           (CLIC_USB_IRQn)
+#define BSP_USB_ISR                 (USB_IRQHandler)
+#define BSP_USB_DMA_CLIC_IRQN       (CLIC_USB_DMA_IRQn)
+#define BSP_USB_DMA_ISR             (USB_DMA_IRQHandler)
+
+/******************************************************************************/
+/*                                  TUSB320                                   */
+/******************************************************************************/
+
+/* I2C2 interface */
+#define BSP_I2C2_INSTANCE           (I2C2)
+#define BSP_I2C2_CLK_EN_FN          (CRU_APB1_EnableClock)
+#define BSP_I2C2_CLK_PERIPH         (CRU_APB1_PERIPH_I2C2)
+#define BSP_I2C2_CRU_PIN_AF         (CRU_PIN_AF_2)
+#define BSP_I2C2_SCL_CRU_PORT       (CRU_PORT_B)
+#define BSP_I2C2_SCL_CRU_PIN        (CRU_PIN_8)
+#define BSP_I2C2_SDA_CRU_PORT       (CRU_PORT_B)
+#define BSP_I2C2_SDA_CRU_PIN        (CRU_PIN_9)
+
+/* Interrupt pin */
+#define BSP_TUSB320_INT_GPIO_PORT   (GPIO1)
+#define BSP_TUSB320_INT_GPIO_PIN    (GPIO_PIN_11)
+#define BSP_TUSB320_INT_CRU_PORT    (CRU_PORT_B)
+#define BSP_TUSB320_INT_CRU_PIN     (CRU_PIN_11)
+#define BSP_TUSB320_INT_CLIC_IRQN   (CLIC_EXTI_PB_IRQn)
+#define BSP_TUSB320_INT_ISR         (EXTI_PB_IRQHandler)
+
+#include "../Components/tusb320/tusb320.h"
+
+#endif /* __BSP_H */

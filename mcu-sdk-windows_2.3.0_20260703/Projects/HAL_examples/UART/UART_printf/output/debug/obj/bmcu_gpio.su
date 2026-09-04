@@ -1,0 +1,3 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_gpio.c:36:13:GPIO_DeInit	16	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_gpio.c:78:13:GPIO_Init	16	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/Drivers/HAL/Src/bmcu_gpio.c:96:6:GPIO_StructInit	0	static

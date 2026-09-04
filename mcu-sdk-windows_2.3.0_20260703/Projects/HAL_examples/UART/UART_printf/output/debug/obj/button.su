@@ -1,0 +1,3 @@
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/button/button.c:39:1:bsp_btn_init	48	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/button/button.c:68:1:bsp_btn_deinit	48	static
+C:/MCU/U1000/mcu-sdk-windows_2.3.0_20260703/BSP/Components/button/button.c:86:1:bsp_btn_ispressed	0	static

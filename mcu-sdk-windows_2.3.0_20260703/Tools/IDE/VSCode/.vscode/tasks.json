@@ -1,0 +1,336 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // Internal-use services:
+        //   Setup && Settings update
+        {
+            "label": "_service.Setup.USB",
+            "type": "shell",
+            "linux": {
+                "command": "pkexec sh -c 'echo \"SUBSYSTEM==\\\"usb\\\", ATTR{idVendor}==\\\"0403\\\", ATTR{idProduct}==\\\"6010\\\", MODE=\\\"0666\\\", GROUP=\\\"users\\\"\nSUBSYSTEM==\\\"usb\\\", ATTR{idVendor}==\\\"cafe\\\", ATTR{idProduct}==\\\"2304\\\", MODE=\\\"0666\\\", GROUP=\\\"users\\\"\" > /etc/udev/rules.d/80-bmcu.rules && udevadm control --reload-rules && udevadm trigger --subsystem-match=usb'",
+            },
+            "windows" : {
+                "command": "${config:SDK_DIR}${pathSeparator}Tools${pathSeparator}zadig-*.exe"
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": {},
+        },
+        {
+            "label": "__service.UpdateSettings",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "POSIX_PATH=$(echo '${workspaceFolder}' | tr '\\\\' '/') &&",
+                    "sed -i \\\"s|\\\\\\\"POSIX_PATH\\\\\\\":.*|\\\\\\\"POSIX_PATH\\\\\\\": \\\\\\\"${POSIX_PATH}\\\\\\\",|\\\" ${POSIX_PATH}/.vscode/settings.json &&",
+                    "__MAKE_VARS__='PRJ_NAME BOARD BUILD_TYPE SDK_DIR MEM_REG_ROM MCU_MODEL CORE_NUM' &&",
+                    "for __MAKE_VAR__ in ${__MAKE_VARS__}; do ",
+                    "__MAKE_VALUE__=$(make --no-print-directory -C ${POSIX_PATH} print-${__MAKE_VAR__}) &&",
+                    "sed -i \\\"s|\\\\\\\"${__MAKE_VAR__}\\\\\\\":.*|\\\\\\\"${__MAKE_VAR__}\\\\\\\": \\\\\\\"${__MAKE_VALUE__}\\\\\\\",|\\\" ${POSIX_PATH}/.vscode/settings.json;",
+                    "done &&",
+                    // Fill missing vars
+                    "sed -i \\\"s|\\\\\\\"BOARD\\\\\\\": \\\\\\\"\\\\\\\",|\\\\\\\"BOARD\\\\\\\": \\\\\\\"generic\\\\\\\",|\\\" ${POSIX_PATH}/.vscode/settings.json &&",
+                    "sed -i \\\"s|\\\\\\\"MEM_REG_ROM\\\\\\\": \\\\\\\"\\\\\\\",|\\\\\\\"MEM_REG_ROM\\\\\\\": \\\\\\\"EFLASH\\\\\\\",|\\\" ${POSIX_PATH}/.vscode/settings.json",
+                "\""],
+            },
+            "linux": {
+                "command": [
+                    "POSIX_PATH=${workspaceFolder} &&",
+                    "sed -i \"s|\\\"POSIX_PATH\\\":.*|\\\"POSIX_PATH\\\": \\\"${POSIX_PATH}\\\",|\" ${POSIX_PATH}/.vscode/settings.json &&",
+                    "__MAKE_VARS__='PRJ_NAME BOARD BUILD_TYPE SDK_DIR MEM_REG_ROM MCU_MODEL CORE_NUM' &&",
+                    "for __MAKE_VAR__ in ${__MAKE_VARS__}; do ",
+                    "__MAKE_VALUE__=`make --no-print-directory -C ${POSIX_PATH} print-${__MAKE_VAR__}` &&",
+                    "sed -i \"s|\\\"${__MAKE_VAR__}\\\":.*|\\\"${__MAKE_VAR__}\\\": \\\"${__MAKE_VALUE__}\\\",|\" ${POSIX_PATH}/.vscode/settings.json;",
+                    "done &&",
+                    // Fill missing vars
+                    "sed -i \"s|\\\"BOARD\\\": \\\"\\\",|\\\"BOARD\\\": \\\"generic\\\",|\" ${POSIX_PATH}/.vscode/settings.json &&",
+                    "sed -i \"s|\\\"MEM_REG_ROM\\\": \\\"\\\",|\\\"MEM_REG_ROM\\\": \\\"EFLASH\\\",|\" ${POSIX_PATH}/.vscode/settings.json",
+                ],
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": {},
+        },
+    
+        //   Build
+        {
+            "label": "__service.Build",
+            "type": "shell",
+            "hide": true,
+            "isBackground": false,
+            "command": "make",
+            "args": [
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        {
+            "label": "__service.Clean",
+            "type": "shell",
+            "hide": true,
+            "isBackground": false,
+            "command": "make",
+            "args": [
+                "clean",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+
+        //   OpenOCD manage
+        {
+           "label": "__service.OpenOCD.Run",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "${config:OOCD.CMD} ${config:OOCD.LAUNCH.${config:MEM_REG_ROM}}",
+                "\""],
+            },
+            "linux": {
+                "command": ["sh -c \"",
+                    "${config:OOCD.CMD} ${config:OOCD.LAUNCH.${config:MEM_REG_ROM}}",
+                "\""],
+            },
+            "problemMatcher": {
+                "owner": "openocd",
+                "severity": "error",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^Error:(.*)$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Open On-Chip Debugger(.*)$",
+                    "endsPattern": "^On standby..."
+                }
+            },
+            "hide": true,
+            "isBackground": true,
+            "presentation": {
+                "close": true,
+            },
+            "runOptions": {
+                "instanceLimit": 1,
+                "instancePolicy": "terminateOldest"
+            },
+        },
+        {
+            "label": "__service.OpenOCD.Memory.Load",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.${config:MEM_REG_ROM}} ${config:OOCD.LOAD.${config:MEM_REG_ROM}}",
+                "\""],
+            },
+            "linux": {
+                "command": ["sh -c \"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.${config:MEM_REG_ROM}} ${config:OOCD.LOAD.${config:MEM_REG_ROM}}",
+                "\""],
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": false,
+                "clear": true,
+            },
+            "problemMatcher": {},
+        },
+        {
+            "label": "__service.OpenOCD.Memory.Erase.eFlash",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.EFLASH} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "linux": {
+                "command": ["sh -c \"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.EFLASH} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+            },
+            "problemMatcher": {},
+        },
+        {
+            "label": "__service.OpenOCD.Memory.Erase.QSPI0",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.QSPI0} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "linux": {
+                "command": ["sh -c \"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.QSPI0} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+            },
+            "problemMatcher": {},
+        },
+        {
+            "label": "__service.OpenOCD.Memory.Erase.QSPI1",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "sh",
+                    "args": ["-c"]
+                }
+            },
+            "windows": {
+                "command": ["\"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.QSPI1} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "linux": {
+                "command": ["sh -c \"",
+                    "${config:OOCD.CMD} ${config:OOCD.ERASE.QSPI1} -c \\\"after 100\\\" -c \\\"exit 0\\\"",
+                "\""],
+            },
+            "hide": true,
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+            },
+            "problemMatcher": {},
+        },
+
+        // User-available tasks
+        //   Preparatory
+        {
+            "label": "Setup USB",
+            "dependsOrder": "sequence",
+            "dependsOn": "_service.Setup.USB",
+            "problemMatcher": {},
+        },
+        {
+            "label": "Update settings",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.UpdateSettings",
+            ],
+            "problemMatcher": {},
+        },
+
+        //   Useful
+        {
+            "label": "Clean",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.Clean",
+            ],
+            "problemMatcher": {},
+        },
+        {
+            "label": "Erase eFlash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.OpenOCD.Memory.Erase.eFlash",
+            ],
+            "problemMatcher": {},
+        },
+        {
+            "label": "Erase QSPI0 Flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.OpenOCD.Memory.Erase.QSPI0",
+            ],
+            "problemMatcher": {},
+        },
+        {
+            "label": "Erase QSPI1 Flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.OpenOCD.Memory.Erase.QSPI1",
+            ],
+            "problemMatcher": {},
+        },
+
+        //   Build group
+        {
+            "label": "Build",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.Build",
+                "__service.UpdateSettings",
+            ],
+            "group": "build",
+            "problemMatcher": {},
+        },
+        {
+            "label": "Rebuild",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.Clean",
+                "__service.Build",
+                "__service.UpdateSettings",
+            ],
+            "group": "build",
+            "problemMatcher": {},
+        },
+        {
+            "label": "Load",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "__service.OpenOCD.Memory.Load",
+            ],
+            "group": "build",
+            "problemMatcher": {},
+        },
+    ]
+}
